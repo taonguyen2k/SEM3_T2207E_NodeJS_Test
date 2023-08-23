@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Management</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>User Management</h1>
+  
+  <h2>Add User</h2>
+  <form id="addUserForm">
+    UserId: <input type="text" name="UserId"><br>
+    Username: <input type="text" name="Username"><br>
+    Fullname: <input type="text" name="Fullname"><br>
+    Address: <input type="text" name="Address"><br>
+    <button type="submit">Add User</button>
+  </form>
+  
+  <h2>User List</h2>
+  <ul id="userList">
+    <!-- Danh sách user  -->
+  </ul>
+  
+  <script>
+    // Thêm user
+    $('#addUserForm').submit(function(event) {
+      event.preventDefault();
+      const formData = $(this).serialize();
+      
+      $.post('/api/users', formData, function(data) {
+        alert('User added successfully.');
+        location.reload();
+      });
+    });
+    
+    // Xóa user
+    $('#userList').on('click', '.delete-button', function() {
+      const userId = $(this).data('userid');
+      
+      $.ajax({
+        url: `/api/users/${userId}`,
+        type: 'DELETE',
+        success: function() {
+          alert('User deleted successfully.');
+          location.reload();
+        }
+      });
+    });
+    
+    // Hiển thị danh sách user
+    $.get('/api/users', function(data) {
+      const userList = $('#userList');
+      
+      data.forEach(function(user) {
+        userList.append(`<li>${user.Username} - ${user.Fullname} - ${user.Address}<button class="delete-button" data-userid="${user.UserId}">   Delete   </button></li>`);
+      });
+    });
+  </script>
+</body>
+</html>
